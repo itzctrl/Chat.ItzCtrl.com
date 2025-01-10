@@ -56,6 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     updateFriendsList(data.friends);
                     updateNotificationCount(data.notificationCount);
                     
+                    // Activate sidebar on first login
                     sidebar.classList.add('active');
                     mainContent.classList.add('sidebar-active');
                 } else {
@@ -74,6 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
            friendsList.appendChild(li);
        });
        
+       // Add context menu event listener for right-click
        friendsList.addEventListener('contextmenu', function(e) {
            if (e.target.tagName === 'LI') {
                e.preventDefault();
@@ -90,6 +92,7 @@ document.addEventListener('DOMContentLoaded', function() {
        contextMenu.style.top = `${y}px`;
    }
 
+   // Remove friend from list
    document.getElementById('removeFriend').addEventListener('click', function() {
        if (selectedFriendId) {
            fetch(`remove_friend.php`, {
@@ -108,6 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
        }
    });
 
+   // Hide context menu when clicking elsewhere
    window.addEventListener('click', hideContextMenu);
 
    function hideContextMenu() {
@@ -222,27 +226,39 @@ document.addEventListener('DOMContentLoaded', function() {
       } 
   }
 
-  sendMessageButton.addEventListener('click', function() { 
-      const messageInputValue= messageInput.value.trim(); 
-      if (messageInputValue && currentChatFriendId) { 
-          fetch('send_message.php', { 
-              method: 'POST', 
-              headers: { 
-                  'Content-Type': 'application/x-www-form-urlencoded', 
-              }, 
-              body: `friend_id=${currentChatFriendId}&message=${encodeURIComponent(messageInputValue)}` 
-          }) 
-          .then(response => response.json()) 
-          .then(data => { 
-              if (data.success) { 
-                  messageInput.value= ''; 
-                  loadChatMessages(); 
-              } else { 
-                  alert('Failed to send message'); 
-              } 
-          }); 
-      } 
-  });
+// Function to send the message
+function sendMessage() {
+    const messageInputValue = messageInput.value.trim();
+    if (messageInputValue && currentChatFriendId) {
+        fetch('send_message.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: `friend_id=${currentChatFriendId}&message=${encodeURIComponent(messageInputValue)}`
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                messageInput.value = '';
+                loadChatMessages();
+            } else {
+                alert('Failed to send message');
+            }
+        });
+    }
+}
+
+// Event listener for the send button click
+sendMessageButton.addEventListener('click', sendMessage);
+
+// Event listener for the Enter key press in the message input
+messageInput.addEventListener('keyup', function(event) {
+    if (event.key === 'Enter') {
+        sendMessage();
+    }
+});
+
 
   document.getElementById('logout').addEventListener('click', function(e) { 
       e.preventDefault(); 

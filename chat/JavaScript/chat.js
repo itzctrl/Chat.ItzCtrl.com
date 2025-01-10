@@ -44,4 +44,5 @@ function loadMessages() {
         });
 }
 
+// Refresh messages every 2 seconds
 setInterval(loadMessages, 2000);
